@@ -1,0 +1,121 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Exploration App</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        color: #fff;
+        text-align: center;
+        }
+        #app {
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
+        }
+        h1 {
+        font-size: 2.5rem;
+        }
+        .image-container {
+        margin: 20px 0;
+        }
+        img {
+        max-width: 100%;
+        height: 300px;
+        border: 2px solid #fff;
+        border-radius: 10px;
+        }
+        .description {
+        margin: 20px 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        }
+        input {
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        }
+        button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        }
+        button:hover {
+        background-color: #0056b3;
+        }
+    </style>
+    </head>
+    <body>
+    <div id="app">
+        <h1>Space Exploration App</h1>
+        <input type="date" id="datePicker" max="" />
+        <button id="fetchImage">Get Space Image</button>
+        <div class="image-container" id="imageContainer"></div>
+    </div>
+    <script >
+    // script.js
+
+    const apiKey = "DEMO_KEY"; // Replace with your NASA API key
+    const datePicker = document.getElementById("datePicker");
+    const fetchImageButton = document.getElementById("fetchImage");
+    const imageContainer = document.getElementById("imageContainer");
+
+    // Set max date to today
+    const today = new Date().toISOString().split("T")[0];
+    datePicker.max = today;
+
+    // Fetch APOD data
+    async function fetchAPOD(date) {
+    const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+        throw new Error("Failed to fetch APOD data.");
+        }
+        const data = await response.json();
+        displayAPOD(data);
+    } catch (error) {
+        imageContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+    }
+    }
+
+    // Display APOD data
+    function displayAPOD(data) {
+    const { title, explanation, url, media_type } = data;
+    const imageHTML = `
+        <h2>${title}</h2>
+        ${media_type === "image" 
+        ? `<img src="${url}" alt="${title}" />`
+        : `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`}
+        <p class="description">${explanation}</p>
+    `;
+    imageContainer.innerHTML = imageHTML;
+    }
+
+    // Handle button click
+    fetchImageButton.addEventListener("click", () => {
+    const selectedDate = datePicker.value;
+    if (!selectedDate) {
+        imageContainer.innerHTML = "<p>Please select a date.</p>";
+        return;
+    }
+    imageContainer.innerHTML = "<p>Loading...</p>";
+    fetchAPOD(selectedDate);
+    });
+    </script>
+
+
+    </script>
+    </body>
+    </html>
